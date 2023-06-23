@@ -15,9 +15,9 @@ jobs:
           sudo apt update -y -qqq
           sudo apt install -y bash wget ca-certificates curl git
           sudo ln -svf bash /bin/sh
-          sudo bash docker/.pre
+          sudo bash sethost/.pre
           sudo apt upgrade -fy -qqq
-          sudo bash docker/install_docker.sh
+          sudo bash sethost/install_docker.sh
       - name: Build al8
         run: |
           sudo docker build -t al:8 almalinux8
