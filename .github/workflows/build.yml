@@ -1,0 +1,25 @@
+name: Build
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install docker
+        run: |
+          sudo apt update -y -qqq
+          sudo apt install -y bash wget ca-certificates curl git
+          sudo ln -svf bash /bin/sh
+          sudo bash docker/.pre
+          sudo apt upgrade -fy -qqq
+          sudo bash docker/install_docker.sh
+      - name: Build al8
+        run: |
+          sudo docker build -t al:8 almalinux8
+          sudo docker ps -a
+          sudo docker images
