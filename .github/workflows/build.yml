@@ -22,7 +22,7 @@ jobs:
         run: >
           sudo docker build --no-cache -t "${{ secrets.DOCKERHUB_USERNAME }}"/almalinux:8 -f dockerfiles/al8/Dockerfile dockerfiles/al8/;
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login --username="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin;
-          sudo docker push "${{ secrets.DOCKERHUB_USERNAME }}"/almalinux:8
-          sudo systemctl stop docker.socket docker.service containerd.service
+          sudo docker push "${{ secrets.DOCKERHUB_USERNAME }}"/almalinux:8;
+          sudo systemctl stop docker.socket docker.service containerd.service;
           sudo /bin/rm -fr /var/lib/docker/*
 
