@@ -18,8 +18,8 @@ jobs:
           sudo bash sethost/.pre
           sudo apt upgrade -fy -qqq
           sudo bash sethost/install_docker.sh
-      - name: Build al8
+      - name: Build almalinux 8
         run: |
-          sudo docker build --no-cache -t al:8 almalinux8
-          sudo docker ps -a
-          sudo docker images
+          sudo docker build --no-cache -t "${{ secrets.DOCKERHUB_USERNAME }}"/almalinux:8 almalinux8/
+          sudo docker login --username="${{ secrets.DOCKERHUB_USERNAME }}" --password="${{ secrets.DOCKERHUB_TOKEN }}"
+          sudo docker push "${{ secrets.DOCKERHUB_USERNAME }}"/almalinux:8
