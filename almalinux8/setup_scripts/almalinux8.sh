@@ -335,7 +335,7 @@ _build_openssl111() {
     sed 's|http://|https://|g' -i usr/lib64/pkgconfig/*.pc
     _strip_files
     install -m 0755 -d usr/local/private
-    cp -af usr/lib64/*.so.* usr/local/private/
+    cp -af usr/lib64/*.so* usr/local/private/
     #rm -f /usr/lib64/libssl.*
     #rm -f /usr/lib64/libcrypto.*
     rm -fr /usr/include/openssl
@@ -393,7 +393,7 @@ _build_openssl30quictls() {
     sed 's|http://|https://|g' -i usr/lib64/pkgconfig/*.pc
     _strip_files
     install -m 0755 -d usr/local/private
-    cp -af usr/lib64/*.so.* usr/local/private/
+    cp -af usr/lib64/*.so* usr/local/private/
     #rm -f /usr/lib64/libssl.*
     #rm -f /usr/lib64/libcrypto.*
     rm -fr /usr/include/openssl
@@ -429,7 +429,7 @@ _build_lz4
 _build_zstd
 _build_libedit
 _build_pcre2
-_build_openssl111
+#_build_openssl111
 _build_openssl30quictls
 echo
 echo ' setup env done'
