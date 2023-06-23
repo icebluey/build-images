@@ -442,6 +442,8 @@ yum clean all
 /bin/rm -fr /var/cache/dnf
 sleep 1
 install -m 0755 -d /var/cache/dnf
+/bin/rm -fr ~/.wget-hst*
+find /var/log/ -type f -exec /bin/bash -c "/usr/bin/cat /dev/null > {}" \;
 /bin/rm -fr /var/tmp/*
 /bin/rm -fr /var/tmp/.[A-Za-z0-9]*
 /bin/rm -fr /tmp/*
