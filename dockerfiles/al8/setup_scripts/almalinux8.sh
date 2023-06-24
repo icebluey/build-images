@@ -169,7 +169,7 @@ _build_lz4() {
     sed '/^prefix/s|= .*|= /usr|g' -i programs/Makefile
     sed '/^libdir/s|= .*|= /usr/lib64|g' -i programs/Makefile
     LDFLAGS='' ; LDFLAGS="${_ORIG_LDFLAGS}"' -Wl,-rpath,\$$ORIGIN' ; export LDFLAGS
-    make -j2 all prefix=/usr libdir=/usr/lib64
+    make -j2 prefix=/usr libdir=/usr/lib64
     rm -fr /tmp/lz4
     make install DESTDIR=/tmp/lz4
     cd /tmp/lz4
