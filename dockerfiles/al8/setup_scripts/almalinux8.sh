@@ -37,7 +37,10 @@ yum install -y asciidoc audit-libs-devel bash bc binutils binutils-devel bison b
   openssl openssl-devel patch pciutils-devel perl-ExtUtils-Embed perl-Carp perl-devel \
   perl-generators perl-interpreter python3-devel python3-docutils python3-sphinx \
   redhat-rpm-config rsync sh-utils tar xmlto xz xz-devel zlib-devel
-yum install -y systemd-devel net-snmp-devel libnfnetlink-devel libnfnetlink file-devel file
+yum install -y systemd-devel
+yum install -y net-snmp-devel net-snmp-libs net-snmp-agent-libs
+yum install -y libnfnetlink-devel libnfnetlink
+yum install -y file-devel file
 yum install -y nftables-devel nftables
 yum install -y iptables-devel iptables
 yum install -y ipset-devel ipset
