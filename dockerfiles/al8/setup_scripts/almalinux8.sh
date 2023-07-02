@@ -56,6 +56,26 @@ yum install -y patch
 yum install -y patchelf
 yum install -y glibc-all-langpacks
 
+yum install -y dracut ; yum update -y dracut
+echo 'diff --git a/module-setup.sh b/module-setup.sh
+index 38c244a..850bec7 100755
+--- a/module-setup.sh
++++ b/module-setup.sh
+@@ -177,9 +177,6 @@ install() {
+             /etc/machine-info \
+             /etc/vconsole.conf \
+             /etc/locale.conf \
+-            /etc/modules-load.d/*.conf \
+-            /etc/sysctl.d/*.conf \
+-            /etc/sysctl.conf \
+             /etc/udev/udev.conf \
+             ${NULL}
+ ' > /tmp/remove_sysctl_modules-load.d_from_initramfs.patch
+sleep 1
+patch --verbose -d /usr/lib/dracut/modules.d/00systemd -N -p1 -i /tmp/remove_sysctl_modules-load.d_from_initramfs.patch
+sleep 1
+rm -f /tmp/remove_sysctl_modules-load.d_from_initramfs.patch
+
 /sbin/ldconfig >/dev/null 2>&1
 echo
 echo ' preinstall done'
