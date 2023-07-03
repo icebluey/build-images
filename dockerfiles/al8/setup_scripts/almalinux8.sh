@@ -6,6 +6,9 @@ _install_pre_el8() {
     set -e
     _tmp_dir="$(mktemp -d)"
     cd "${_tmp_dir}"
+    yum makecache
+    yum install -y bash wget ca-certificates curl
+    [[ -f /usr/bin/ln ]] && ln -svf bash /bin/sh
     wget -c -t 9 -T 9 "https://raw.githubusercontent.com/icebluey/pre-build/master/el8/.preinstall-el8"
     bash .preinstall-el8
     cd /tmp
