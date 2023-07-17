@@ -9,6 +9,7 @@ systemctl stop containerd.service >/dev/null 2>&1 || :
 systemctl disable docker.service >/dev/null 2>&1 || :
 systemctl disable docker.socket >/dev/null 2>&1 || :
 systemctl disable containerd.service >/dev/null 2>&1 || :
+echo -e 'nameserver 8.8.8.8\nnameserver 1.1.1.1' >/etc/resolv.conf
 set -e
 _tmp_dir="$(mktemp -d)"
 cd "${_tmp_dir}"
