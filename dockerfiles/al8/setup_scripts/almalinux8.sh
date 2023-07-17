@@ -401,6 +401,7 @@ echo
 
 _tmp_dir="$(mktemp -d)"
 cd "${_tmp_dir}"
+yum install -y linux-firmware
 git clone 'git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git'
 sleep 2
 cd linux-firmware
