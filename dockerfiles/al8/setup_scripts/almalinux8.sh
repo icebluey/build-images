@@ -385,7 +385,7 @@ _dl_openssl30quictls() {
     cd /tmp
     rm -fr /tmp/openssl30quictls
 }
-_dl_openssl30quictls
+#_dl_openssl30quictls
 
 rm -fr /usr/local/private
 _build_zlib
@@ -394,7 +394,7 @@ _build_zstd
 _build_libedit
 _build_pcre2
 #_build_openssl111
-_build_openssl30quictls
+#_build_openssl30quictls
 echo
 echo ' setup env done'
 echo
