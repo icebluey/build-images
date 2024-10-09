@@ -120,9 +120,9 @@ _build_lz4() {
     sed '/^prefix/s|= .*|= /usr|g' -i lib/Makefile
     sed '/^libdir/s|= .*|= /usr/lib64|g' -i lib/Makefile
     sed '/^PREFIX/s|= .*|= /usr|g' -i programs/Makefile
-    sed '/^LIBDIR/s|= .*|= /usr/lib64|g' -i programs/Makefile
+    #sed '/^LIBDIR/s|= .*|= /usr/lib64|g' -i programs/Makefile
     sed '/^prefix/s|= .*|= /usr|g' -i programs/Makefile
-    sed '/^libdir/s|= .*|= /usr/lib64|g' -i programs/Makefile
+    #sed '/^libdir/s|= .*|= /usr/lib64|g' -i programs/Makefile
     LDFLAGS='' ; LDFLAGS="${_ORIG_LDFLAGS}"' -Wl,-rpath,\$$ORIGIN' ; export LDFLAGS
     make -j2 prefix=/usr libdir=/usr/lib64
     rm -fr /tmp/lz4
@@ -158,9 +158,9 @@ _build_zstd() {
     sed '/^prefix/s|= .*|= /usr|g' -i lib/Makefile
     sed '/^libdir/s|= .*|= /usr/lib64|g' -i lib/Makefile
     sed '/^PREFIX/s|= .*|= /usr|g' -i programs/Makefile
-    sed '/^LIBDIR/s|= .*|= /usr/lib64|g' -i programs/Makefile
+    #sed '/^LIBDIR/s|= .*|= /usr/lib64|g' -i programs/Makefile
     sed '/^prefix/s|= .*|= /usr|g' -i programs/Makefile
-    sed '/^libdir/s|= .*|= /usr/lib64|g' -i programs/Makefile
+    #sed '/^libdir/s|= .*|= /usr/lib64|g' -i programs/Makefile
     LDFLAGS='' ; LDFLAGS="${_ORIG_LDFLAGS}"' -Wl,-rpath,\$$OOORIGIN' ; export LDFLAGS
     make -j2 prefix=/usr libdir=/usr/lib64
     rm -fr /tmp/zstd
