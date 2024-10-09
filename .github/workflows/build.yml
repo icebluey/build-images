@@ -13,11 +13,13 @@ jobs:
       - name: Install docker
         run: >
           sudo apt update -y -qqq;
-          sudo apt install -y bash wget ca-certificates curl git;
+          sudo apt autoremove --purge needrestart;
+          sudo apt install -y bash;
           sudo ln -svf bash /bin/sh;
-          sudo bash sethost/.pre;
-          sudo apt upgrade -fy -qqq;
-          sudo bash sethost/install_docker.sh
+          sudo ln -svf bash /bin/sh;
+          sudo /bin/bash sethost/.clean-os.sh;
+          sudo /bin/bash sethost/install_for_docker.sh;
+          sudo /bin/bash sethost/install_docker.sh;
       - name: Build almalinux 8
         run: >
           sudo docker build --no-cache -t "${{ secrets.DOCKERHUB_USERNAME }}"/almalinux:8 -f dockerfiles/al8/Dockerfile dockerfiles/al8/;
