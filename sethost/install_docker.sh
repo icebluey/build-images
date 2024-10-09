@@ -14,9 +14,10 @@ set -e
 _tmp_dir="$(mktemp -d)"
 cd "${_tmp_dir}"
 wget -c -t 9 -T 9 \
-"https://github.com/icebluey/k8s/releases/download/v2023-06-20/containerd-1.7.2-1_amd64.tar.xz"
-wget -c -t 9 -T 9 \
-"https://github.com/icebluey/k8s/releases/download/v2023-06-20/docker-only-23.0.6-1_amd64.tar.xz"
+wget -q -c -t 9 -T 9 \
+"https://github.com/icebluey/docker/releases/download/v2024-09-15/containerd-1.7.22-1_amd64.tar.xz"
+wget -q -c -t 9 -T 9 \
+"https://github.com/icebluey/docker/releases/download/v2024-09-15/docker-only-27.2.1-1_amd64.tar.xz"
 rm -f /usr/bin/containerd
 rm -f /usr/bin/containerd-shim
 rm -f /usr/bin/containerd-shim-runc-v1
@@ -66,6 +67,20 @@ cd /tmp
 rm -fr "${_tmp_dir}"
 bash /etc/containerd/.install.txt
 bash /etc/docker/.install.txt
+
+echo '{
+    "dns": [
+        "8.8.8.8"
+    ],
+    "exec-opts": [
+        "native.cgroupdriver=systemd"
+    ],
+    "storage-driver": "overlay2",
+    "data-root": "/mnt/docker-data"
+}' > /etc/docker/daemon.json
+/bin/rm -fr /mnt/docker-data
+sleep 2
+mkdir /mnt/docker-data
 systemctl start containerd.service >/dev/null 2>&1 || :
 sleep 2
 systemctl start docker.service >/dev/null 2>&1 || :
