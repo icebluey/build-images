@@ -13,13 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install docker
-        run: >
-          sudo apt update -y -qqq;
-          sudo apt autoremove --purge -y needrestart || true;
-          sudo apt install -y bash wget;
-          sudo ln -svf bash /bin/sh;
-          sudo /bin/bash scripts/clean-os.sh;
-          sudo apt upgrade -y -qqq;
+        run: |
+          sudo apt update -y -qqq
+          sudo apt autoremove --purge -y needrestart || true
+          sudo apt install -y bash wget
+          sudo ln -svf bash /bin/sh
+          sudo /bin/bash scripts/clean-os.sh
+          sudo apt upgrade -y -qqq
+          sudo /bin/rm -fr /tmp/*
           sudo /bin/bash scripts/install-docker.sh
 
       - name: Build almalinux 8
@@ -31,4 +32,3 @@ jobs:
           sudo /bin/rm -fr /var/lib/docker/* ;
           sudo /bin/rm -fr /var/lib/containerd/* ;
           sudo /bin/rm -fr /mnt/docker-data/*
-
