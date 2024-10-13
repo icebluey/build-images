@@ -103,6 +103,57 @@ _build_zlib() {
     /sbin/ldconfig
 }
 
+_build_brotli() {
+    /sbin/ldconfig
+    set -e
+    _tmp_dir="$(mktemp -d)"
+    cd "${_tmp_dir}"
+    git clone --recursive 'https://github.com/google/brotli.git' brotli
+    cd brotli
+    rm -fr .git
+    if [[ -f bootstrap ]]; then
+        ./bootstrap
+        rm -fr autom4te.cache
+        LDFLAGS='' ; LDFLAGS="${_ORIG_LDFLAGS}"' -Wl,-rpath,\$$ORIGIN' ; export LDFLAGS
+        ./configure \
+        --build=x86_64-linux-gnu --host=x86_64-linux-gnu \
+        --enable-shared --disable-static \
+        --prefix=/usr --libdir=/usr/lib64 --includedir=/usr/include --sysconfdir=/etc
+        make -j2 all
+        rm -fr /tmp/brotli
+        make install DESTDIR=/tmp/brotli
+    else
+        LDFLAGS='' ; LDFLAGS="${_ORIG_LDFLAGS}"' -Wl,-rpath,\$ORIGIN' ; export LDFLAGS
+        cmake \
+        -S "." \
+        -B "build" \
+        -DCMAKE_BUILD_TYPE='Release' \
+        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+        -DCMAKE_INSTALL_PREFIX:PATH=/usr \
+        -DINCLUDE_INSTALL_DIR:PATH=/usr/include \
+        -DLIB_INSTALL_DIR:PATH=/usr/lib64 \
+        -DSYSCONF_INSTALL_DIR:PATH=/etc \
+        -DSHARE_INSTALL_PREFIX:PATH=/usr/share \
+        -DLIB_SUFFIX=64 \
+        -DBUILD_SHARED_LIBS:BOOL=ON \
+        -DCMAKE_INSTALL_SO_NO_EXE:INTERNAL=0
+        cmake --build "build"  --verbose
+        rm -fr /tmp/brotli
+        DESTDIR="/tmp/brotli" cmake --install "build"
+    fi
+    cd /tmp/brotli
+    _strip_files
+    install -m 0755 -d usr/local/private
+    cp -af usr/lib64/*.so* usr/local/private/
+    sleep 2
+    /bin/cp -afr * /
+    sleep 2
+    cd /tmp
+    rm -fr "${_tmp_dir}"
+    rm -fr /tmp/brotli
+    /sbin/ldconfig
+}
+
 _build_lz4() {
     /sbin/ldconfig
     set -e
@@ -259,142 +310,13 @@ _build_pcre2() {
     /sbin/ldconfig
 }
 
-_build_openssl111() {
-    /sbin/ldconfig
-    set -e
-    _tmp_dir="$(mktemp -d)"
-    cd "${_tmp_dir}"
-    _openssl111_ver="$(wget -qO- 'https://www.openssl.org/source/' | grep 'href="openssl-1.1.1' | sed 's|"|\n|g' | grep -i '^openssl-1.1.1.*\.tar\.gz$' | cut -d- -f2 | sed 's|\.tar.*||g' | sort -V | uniq | tail -n 1)"
-    wget -c -t 9 -T 9 "https://www.openssl.org/source/openssl-${_openssl111_ver}.tar.gz"
-    tar -xof openssl-*.tar*
-    sleep 1
-    rm -f openssl-*.tar*
-    cd openssl-*
-    # Only for debian/ubuntu
-    #sed '/define X509_CERT_FILE .*OPENSSLDIR "/s|"/cert.pem"|"/certs/ca-certificates.crt"|g' -i include/internal/cryptlib.h
-    sed '/install_docs:/s| install_html_docs||g' -i Configurations/unix-Makefile.tmpl
-    LDFLAGS='' ; LDFLAGS="${_ORIG_LDFLAGS}"' -Wl,-rpath,\$$ORIGIN' ; export LDFLAGS
-    HASHBANGPERL=/usr/bin/perl
-    ./Configure \
-    --prefix=/usr \
-    --libdir=/usr/lib64 \
-    --openssldir=/etc/pki/tls \
-    enable-ec_nistp_64_gcc_128 \
-    zlib enable-tls1_3 threads \
-    enable-camellia enable-seed \
-    enable-rfc3779 enable-sctp enable-cms \
-    enable-md2 enable-rc5 \
-    no-mdc2 no-ec2m \
-    no-sm2 no-sm3 no-sm4 \
-    shared linux-x86_64 '-DDEVRANDOM="\"/dev/urandom\""'
-    perl configdata.pm --dump
-    make -j2 all
-    rm -fr /tmp/openssl111
-    make DESTDIR=/tmp/openssl111 install_sw
-    cd /tmp/openssl111
-    # Only for debian/ubuntu
-    #mkdir -p usr/include/x86_64-linux-gnu/openssl
-    #chmod 0755 usr/include/x86_64-linux-gnu/openssl
-    #install -c -m 0644 usr/include/openssl/opensslconf.h usr/include/x86_64-linux-gnu/openssl/
-    sed 's|http://|https://|g' -i usr/lib64/pkgconfig/*.pc
-    _strip_files
-    install -m 0755 -d usr/local/private
-    cp -af usr/lib64/*.so* usr/local/private/
-    #rm -f /usr/lib64/libssl.*
-    #rm -f /usr/lib64/libcrypto.*
-    rm -fr /usr/include/openssl
-    rm -fr /usr/include/x86_64-linux-gnu/openssl
-    rm -fr /usr/local/openssl-1.1.1
-    rm -f /etc/ld.so.conf.d/openssl-1.1.1.conf
-    sleep 2
-    /bin/cp -afr * /
-    sleep 2
-    cd /tmp
-    rm -fr "${_tmp_dir}"
-    rm -fr /tmp/openssl111
-    /sbin/ldconfig
-}
-
-_build_openssl30quictls() {
-    /sbin/ldconfig
-    set -e
-    _tmp_dir="$(mktemp -d)"
-    cd "${_tmp_dir}"
-    #_openssl30quictls_ver="$(wget -qO- 'https://github.com/quictls/openssl/branches/all/' | grep -i 'branch="OpenSSL-3\.0\..*quic"' | sed 's/"/\n/g' | grep -i '^openssl.*quic$' | sort -V | tail -n 1)"
-    #git clone -b "${_openssl30quictls_ver}" 'https://github.com/quictls/openssl.git' 'openssl30quictls'
-    mv -f /tmp/openssl30quictls-git.tar.gz ./
-    tar -xof openssl30quictls-git.tar.gz
-    sleep 1
-    rm -f openssl30quictls-*.tar*
-    cd openssl30quictls
-    rm -fr .git
-    # Only for debian/ubuntu
-    #sed '/define X509_CERT_FILE .*OPENSSLDIR "/s|"/cert.pem"|"/certs/ca-certificates.crt"|g' -i include/internal/cryptlib.h
-    sed '/install_docs:/s| install_html_docs||g' -i Configurations/unix-Makefile.tmpl
-    LDFLAGS='' ; LDFLAGS="${_ORIG_LDFLAGS}"' -Wl,-rpath,\$$ORIGIN' ; export LDFLAGS
-    HASHBANGPERL=/usr/bin/perl
-    ./Configure \
-    --prefix=/usr \
-    --libdir=/usr/lib64 \
-    --openssldir=/etc/pki/tls \
-    enable-ec_nistp_64_gcc_128 \
-    zlib enable-tls1_3 threads \
-    enable-camellia enable-seed \
-    enable-rfc3779 enable-sctp enable-cms \
-    enable-md2 enable-rc5 enable-ktls \
-    no-mdc2 no-ec2m \
-    no-sm2 no-sm3 no-sm4 \
-    shared linux-x86_64 '-DDEVRANDOM="\"/dev/urandom\""'
-    perl configdata.pm --dump
-    make -j2 all
-    rm -fr /tmp/openssl30quictls
-    make DESTDIR=/tmp/openssl30quictls install_sw
-    cd /tmp/openssl30quictls
-    # Only for debian/ubuntu
-    #mkdir -p usr/include/x86_64-linux-gnu/openssl
-    #chmod 0755 usr/include/x86_64-linux-gnu/openssl
-    #install -c -m 0644 usr/include/openssl/opensslconf.h usr/include/x86_64-linux-gnu/openssl/
-    sed 's|http://|https://|g' -i usr/lib64/pkgconfig/*.pc
-    _strip_files
-    install -m 0755 -d usr/local/private
-    cp -af usr/lib64/*.so* usr/local/private/
-    #rm -f /usr/lib64/libssl.*
-    #rm -f /usr/lib64/libcrypto.*
-    rm -fr /usr/include/openssl
-    rm -fr /usr/include/x86_64-linux-gnu/openssl
-    rm -fr /usr/local/openssl-1.1.1
-    rm -f /etc/ld.so.conf.d/openssl-1.1.1.conf
-    sleep 2
-    /bin/cp -afr * /
-    sleep 2
-    cd /tmp
-    rm -fr "${_tmp_dir}"
-    rm -fr /tmp/openssl30quictls
-    /sbin/ldconfig
-}
-_dl_openssl30quictls() {
-    set -e
-    cd /tmp
-    rm -fr /tmp/openssl30quictls
-    _openssl30quictls_ver="$(wget -qO- 'https://github.com/quictls/openssl/branches/all/' | grep -i 'branch="OpenSSL-3\.0\..*quic"' | sed 's/"/\n/g' | grep -i '^openssl.*quic$' | sort -V | tail -n 1)"
-    git clone -b "${_openssl30quictls_ver}" 'https://github.com/quictls/openssl.git' 'openssl30quictls'
-    rm -fr openssl30quictls/.git
-    sleep 2
-    tar -zcf openssl30quictls-git.tar.gz openssl30quictls
-    sleep 2
-    cd /tmp
-    rm -fr /tmp/openssl30quictls
-}
-#_dl_openssl30quictls
-
 rm -fr /usr/local/private
 _build_zlib
+_build_brotli
 _build_lz4
 _build_zstd
 _build_libedit
 _build_pcre2
-#_build_openssl111
-#_build_openssl30quictls
 echo
 echo ' setup env done'
 echo
